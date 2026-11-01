@@ -1,0 +1,3 @@
+#!/bin/sh
+# Launchpad zeichnet CloakServer selbst (launchpad).
+exit 0

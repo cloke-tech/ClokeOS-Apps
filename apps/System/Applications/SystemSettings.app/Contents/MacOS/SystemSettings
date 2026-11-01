@@ -1,0 +1,3 @@
+#!/bin/sh
+# System Settings zeichnet CloakServer selbst (settings).
+exit 0

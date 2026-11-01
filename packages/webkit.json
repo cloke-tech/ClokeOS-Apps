@@ -1,0 +1,12 @@
+{
+  "id": "webkit",
+  "name": "WebKit for Search",
+  "version": "2.54.2",
+  "license": "LGPL-2.1 / BSD (WebKitGTK), LGPL-2.1+ (glib-networking)",
+  "source": "https://github.com/cloke-tech/ClokeOS/tree/main/clokeos-darwin/webkit",
+  "install": "extract-root",
+  "arch": {
+    "arm64": {"url": "https://github.com/cloke-tech/ClokeOS/releases/download/webkit-arm64-1/webkit-pd-arm64.tgz", "sha256": "8f85cd4ce417fe93a697c314b64ac2989c7c1795b3daff8bc2bb0b21d09d5c84", "size": 35843535},
+    "x86_64": {"url": "https://github.com/cloke-tech/ClokeOS/releases/download/webkit-x86_64-1/webkit-pd-x86_64.tgz", "sha256": "607bcd948d3e1bbe697be1cd4dcbcc25469b50db1996d0e2ea5c5c564809cb0e", "size": 37651033}
+  }
+}

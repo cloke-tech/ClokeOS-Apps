@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>persistent-apps</key>
+	<array>
+		<string>com.clokeos.fundus</string>
+		<string>com.clokeos.launchpad</string>
+		<string>com.clokeos.search</string>
+		<string>com.clokeos.terminal</string>
+		<string>com.clokeos.notizen</string>
+		<string>com.clokeos.rechner</string>
+		<string>com.clokeos.kalender</string>
+		<string>com.clokeos.aktivitaet</string>
+		<string>com.clokeos.systemeinstellungen</string>
+	</array>
+</dict>
+</plist>

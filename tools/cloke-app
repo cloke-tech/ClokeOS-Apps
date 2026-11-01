@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Programme für ClokeOS aus dieser Quelle installieren (läuft in ClokeOS, als root).
+
+  cloke-app list                 alle Programme und Pakete des Index
+  cloke-app install <kennung>    Programm (z. B. org.dillo.dillo) oder Paket (z. B. webkit) laden, prüfen, entpacken
+  cloke-app remove <kennung>     Programm-Bundle löschen (Pakete: rm -rf /opt/webkit)
+
+Index: CLOKE_APPS_INDEX oder https://raw.githubusercontent.com/cloke-tech/ClokeOS-Apps/main/index.json
+"""
+import hashlib, json, os, platform, shutil, subprocess, sys, tarfile, tempfile, urllib.request
+
+INDEX = os.environ.get('CLOKE_APPS_INDEX', 'https://raw.githubusercontent.com/cloke-tech/ClokeOS-Apps/main/index.json')
+ARCH = 'arm64' if platform.machine() in ('arm64', 'aarch64') else 'x86_64'
+
+
+def fetch(url, sha=None):
+    data = urllib.request.urlopen(url).read()
+    if sha and hashlib.sha256(data).hexdigest() != sha:
+        sys.exit(f'Prüfsumme stimmt nicht: {url}')
+    return data
+
+
+def extract(data, dest):
+    with tempfile.NamedTemporaryFile(suffix='.tgz') as f:
+        f.write(data); f.flush()
+        with tarfile.open(f.name) as t:
+            t.extractall(dest, filter='data')
+
+
+def main():
+    if len(sys.argv) < 2:
+        sys.exit(__doc__)
+    index = json.loads(fetch(INDEX))
+    cmd = sys.argv[1]
+    if cmd == 'list':
+        for a in index['apps']:
+            print(f"{a['category']:7} {a['id']:34} {a['name']}")
+        for p in index['packages']:
+            print(f"package {p['id']:34} {p['name']} {p['version']}")
+    elif cmd in ('install', 'remove') and len(sys.argv) == 3:
+        ident = sys.argv[2]
+        app = next((a for a in index['apps'] if a['id'] == ident), None)
+        pkg = next((p for p in index['packages'] if p['id'] == ident), None)
+        if cmd == 'remove' and app:
+            shutil.rmtree(app['path'], ignore_errors=True); print('entfernt:', app['path']); return
+        if app:
+            extract(fetch(app['package']['url'], app['package']['sha256']), '/')
+            print('installiert:', app['path'])
+            for r in app['recommends']:
+                print(f'Empfohlen: cloke-app install {r}')
+        elif pkg:
+            a = pkg['arch'].get(ARCH) or sys.exit(f'Kein Paket für {ARCH}')
+            extract(fetch(a['url'], a['sha256']), '/')
+            if ident == 'webkit':
+                os.makedirs('/usr/local/libexec/webkit2gtk-4.1', exist_ok=True)
+                for p in ('WebKitNetworkProcess', 'WebKitWebProcess'):
+                    dst = f'/usr/local/libexec/webkit2gtk-4.1/{p}'
+                    if os.path.lexists(dst): os.remove(dst)
+                    os.symlink(f'/opt/webkit/bin/{p}', dst)
+                subprocess.run(['sysctl', '-w', 'net.local.dgram.maxdgram=16384', 'net.local.dgram.recvspace=262144'], check=False)
+            print('installiert:', ident)
+        else:
+            sys.exit(f'Unbekannt: {ident}')
+    else:
+        sys.exit(__doc__)
+
+
+main()

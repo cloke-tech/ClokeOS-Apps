@@ -1,0 +1,7 @@
+#!/bin/sh
+l=$(cut -c1-2 /etc/clokeos-language 2>/dev/null); case "$l" in de|fr|es|it) ;; *) l=en;; esac; t=hell; [ "$CLOKEOS_DARK" = 1 ] && t=dunkel
+start=/share/clokeos/search-$l-$t.html
+c="$HOME/.netsurf/Choices"; mkdir -p "$HOME/.netsurf"
+{ grep -v -e '^homepage_url:' -e '^toolbar_items:' -e '^http_proxy' "$c" 2>/dev/null; echo "homepage_url:file://$start"; echo 'toolbar_items:back/history/forward/home/url_bar/reloadstop/openmenu'; } > "$c.new" && mv "$c.new" "$c"
+if [ -x /opt/webkit/bin/clokesearch ]; then BROWSER_BIN=clokesearch exec /opt/webkit/runmb.sh "${1:-file://$start}"; fi
+exec netsurf-gtk3 "$@"

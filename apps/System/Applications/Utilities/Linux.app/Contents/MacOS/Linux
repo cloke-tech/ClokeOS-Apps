@@ -1,0 +1,3 @@
+#!/bin/sh
+title='Linux'; [ "$(cat /etc/clokeos-language 2>/dev/null)" = de ] && title='Linux'
+exec xfce4-terminal --disable-server --role=com.clokeos.linux --title="$title" --dynamic-title-mode=none --geometry=80x24 -x tux-run
